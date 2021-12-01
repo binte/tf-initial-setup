@@ -36,18 +36,17 @@ Clone the repo:
 
 2. Deploy dedicated resource group, storage account name and container for the Terraform state (replace the subscription ID, as per the instructions in the command).
 
-.. code-block:: bash
+::
     
     ./tf_storage.sh SUBSCRIPTION_ID="subscription id goes here" RESOURCE_GROUP_NAME="RG-EUR-TerraSetup-Storage" STORAGE_ACCOUNT_NAME="saeurterrasetupstorage" CONTAINER_NAME="tfstate" LOCATION="westeurope"
 
 3. Validate that the SPN has the necessary rights, while testing out if the remote TF state can be accessed locally. The current repo has already the terraform folder structure necessary for the following commands to be used. 
 
-.. code-block:: bash
-    
+::    
     terraform init -input=false -backend-config="environments/dev/dev.backend.tfvars"
     terraform plan -var-file="environments/dev/dev.tfvars"
 
-4. *Setup CI pipeline*
+4. Setup CI pipeline.
     #. On the first execution, authorisation shall be granted to the pipeline, because of the need to read values from the Pipeline group library.
 
 5. Set main branch policies, enforcing:
