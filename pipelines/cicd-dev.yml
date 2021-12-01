@@ -1,0 +1,72 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+
+pr: none
+
+variables:
+- group: DEV
+- name: vmImage
+  value: 'ubuntu-20.04'
+
+stages:
+- stage: 'Publish'
+  displayName: 'Publish the TF files'
+  jobs: 
+  - job: 'Publish'
+    displayName: 'Publish job'
+    pool:
+      vmImage: $(vmImage)
+    steps:
+    - task: CopyFiles@2
+      displayName: 'Copying script that runs TF'
+      inputs:
+        sourceFolder: scripts
+        contents: tf_run.sh
+        targetFolder:  $(Build.SourcesDirectory)/terraform
+    - task: ArchiveFiles@2
+      displayName: 'Archiving TF files'
+      inputs:
+        rootFolderOrFile: terraform
+        includeRootFolder: false
+        archiveFile: tfArtifact/tf.zip
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publishing TF files'
+      inputs:
+        pathToPublish: tfArtifact
+        artifactName: terraform
+
+- stage: 'NonProd'
+  displayName: 'Provisioning infrastructure'
+  dependsOn: Publish
+  jobs:
+  - job: Provision
+    displayName: 'Provisioning infrastructure'
+    pool:
+      vmImage: $(vmImage)
+    steps:
+    - task: DownloadBuildArtifacts@0
+      displayName: 'Downloading TF files from pipeline'
+      inputs:
+        downloadType: single
+        artifactName: terraform
+    - task: ExtractFiles@1
+      displayName: 'Extracting TF files'
+      inputs:
+        archiveFilePatterns: '$(Build.ArtifactStagingDirectory)/**/tf.zip'
+        cleanDestinationFolder: false
+    - task: Bash@3
+      displayName: 'Running TF'
+      name: RunTF
+      inputs:
+        targetType: filePath
+        filePath: tf_run.sh
+        arguments: $(environment)
+        failOnStderr: true
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
