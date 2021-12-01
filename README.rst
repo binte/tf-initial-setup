@@ -46,7 +46,7 @@ Clone the repo:
     
     terraform init -input=false -backend-config="environments/dev/dev.backend.tfvars"
     terraform plan -var-file="environments/dev/dev.tfvars"
-..
+.. code-block::
 
 4. Setup CI pipeline.
     #. On the first execution, authorisation shall be granted to the pipeline, because of the need to read values from the Pipeline group library.
