@@ -8,6 +8,7 @@ pr: none
 
 variables:
 - group: DEV
+- group: TF DEV
 - name: vmImage
   value: 'ubuntu-20.04'
 
