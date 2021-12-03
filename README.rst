@@ -47,14 +47,20 @@ Clone the repo:
     terraform init -input=false -backend-config="environments/dev/dev.backend.tfvars"
     terraform plan -var-file="environments/dev/dev.tfvars"
 
-4. Setup CI pipeline.
+4. Create variable group on Azure DevOps with the below variables, with the values outputted on step 1), so that they are injected as environment variables in the pipelines
+    #. ARM_CLIENT_ID
+    #. ARM_CLIENT_SECRET
+    #. ARM_SUBSCRIPTION_ID
+    #. ARM_TENANT_ID
+
+5. Setup CI pipeline.
     #. On the first execution, authorisation shall be granted to the pipeline, because of the need to read values from the Pipeline group library.
 
-5. Set main branch policies, enforcing:
+6. Set main branch policies, enforcing:
     #. ... a mandatory review,
     #. ... running the CI pipeline as a build validation step.
 
-6. Create the CI/CD pipeline that applies the plan.
+7. Create the CI/CD pipeline that applies the plan.
     #. On the first execution, authorisation shall be granted to the pipeline, because of the need to read values from the Pipeline group library.
 
 --------
